@@ -156,7 +156,7 @@ class Comment(base):
                     logging.info('【%s失败】 订单id: %d, 商品id: %d' %
                                  (comment_type, int(i.get('order_id')),
                                   int(i.get('product_id'))))
-                time.sleep(10)
+                time.sleep(5)
 
     def get_comment_list(self):
         with open('./comment.txt', 'r') as f:
