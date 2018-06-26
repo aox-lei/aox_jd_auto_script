@@ -65,7 +65,7 @@ class Login(base):
         driver.find_element_by_css_selector('#nloginpwd').send_keys(password)
         driver.find_element_by_css_selector('#loginsubmit').click()
 
-        validate_code_img_url = self.driver.find_element_by_css_selector(
+        validate_code_img_url = driver.find_element_by_css_selector(
             '#JD_Verification1').get_attribute('src')
 
         if validate_code_img_url is not None:
