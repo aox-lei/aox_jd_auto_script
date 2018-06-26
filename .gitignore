@@ -1,0 +1,6 @@
+.venv
+img
+test*
+cookie.txt
+__pycache__
+*.pyc
