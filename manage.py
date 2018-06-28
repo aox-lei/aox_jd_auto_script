@@ -18,10 +18,8 @@ def cli():
 
 
 @click.command()
-@click.option('--username', required=True)
-@click.option('--password', required=True, hide_input=True, prompt=True)
-def comment(username, password):
-    login_result = Login().login(username, password)
+def comment():
+    login_result = Login().login()
     if login_result:
         logging.info('登录成功')
 

@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests = "*"
+click = "*"
+furl = "*"
+requests-html = "*"
+selenium = "*"
+"pyqt5" = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
