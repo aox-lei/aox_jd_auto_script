@@ -8,7 +8,6 @@ requests = "*"
 click = "*"
 furl = "*"
 requests-html = "*"
-selenium = "*"
 "pyqt5" = "*"
 
 [dev-packages]
