@@ -88,7 +88,7 @@ class Comment(base):
                 time.sleep(5)
 
     def get_comment_list(self):
-        with open(self.COMMENT_PATH, 'r', 'utf-8') as f:
+        with open(self.COMMENT_PATH, 'r', encoding='UTF-8') as f:
             data = f.read()
 
         return list(filter(None, data.split("\n")))
