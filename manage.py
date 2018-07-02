@@ -2,8 +2,8 @@
 import requests
 import logging
 import click
-import sys
-from jd import Login, ServerComment, ProductComment, AppendComment
+from app.utils.base import Login
+from app.utils.comment import ServerComment, ProductComment, AppendComment
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # 禁用安全请求警告
 

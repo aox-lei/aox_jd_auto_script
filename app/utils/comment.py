@@ -1,69 +1,17 @@
 # -*- coding:utf-8 -*-
-import os
 import json
 import requests
 import logging
 import random
 import time
-import sys
 from requests_html import HTML
 from furl import furl
 from urllib import parse
-from web_browser import openWithWebBrowser
-
-
-class base(object):
-    COOKIE_PATH = './cookie.txt'
-    HOME_URL = 'https://home.jd.com/'
-    LOGIN_URL = 'https://passport.jd.com/new/login.aspx'
-    INDEX_URL = 'https://www.jd.com/'
-
-    def __init__(self,):
-        self.session = requests.Session()
-        self.load_cookie()
-
-    def check_login(self):
-        ''' 检测登录 '''
-        result = self.session.get(self.HOME_URL, verify=False)
-
-        html = HTML(html=result.text)
-
-        if html.find('title', first=True).text == '我的京东':
-            return True
-        else:
-            return False
-
-    def load_cookie(self):
-        if os.path.exists(self.COOKIE_PATH):
-            with open(self.COOKIE_PATH, 'r') as f:
-                cookies = f.read()
-            cookies = json.loads(cookies)
-            cookies = requests.utils.cookiejar_from_dict(
-                cookies, cookiejar=None, overwrite=True)
-            self.session.cookies = cookies
-            return True
-        return False
-
-
-class Login(base):
-
-    def login(self):
-        ''' selenium 登录京东 '''
-
-        if self.load_cookie() and self.check_login():
-            return True
-
-        cookies = openWithWebBrowser(self.LOGIN_URL)
-        with open(self.COOKIE_PATH, 'w') as f:
-            f.write(json.dumps(cookies))
-
-        if self.load_cookie() and self.check_login():
-            return True
-
-        return False
+from app.utils.base import base
 
 
 class Comment(base):
+    COMMENT_PATH = './data/comment.txt'
     COMMENT_PRODUCT_LIST = 'https://club.jd.com/myJdcomments/myJdcomment.action?sort=%d'
     PRODUCT_COMMENT_LIST_URL = 'https://sclub.jd.com/comment/productPageComments.action?callback=fetchJSON_comment98vv658&productId=%d&score=0&sortType=5&page=0&pageSize=10&isShadowSku=0&fold=1'
     comment_list = None
@@ -137,7 +85,7 @@ class Comment(base):
                 time.sleep(5)
 
     def get_comment_list(self):
-        with open('./comment.txt', 'r') as f:
+        with open(self.COMMENT_PATH, 'r') as f:
             data = f.read()
 
         return list(filter(None, data.split("\n")))
