@@ -21,8 +21,6 @@ class WebBrowser(QWebEngineView):
         '''
         :param cookie: QNetworkCookie
         '''
-        domain = cookie.domain()
-        path = cookie.path()
         name = str(cookie.name().data(), encoding='utf-8')
         value = str(cookie.value().data(), encoding='utf-8')
 
