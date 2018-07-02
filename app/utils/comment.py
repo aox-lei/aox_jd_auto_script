@@ -1,4 +1,7 @@
 # -*- coding:utf-8 -*-
+'''
+    京东订单自动评价
+'''
 import json
 import requests
 import logging

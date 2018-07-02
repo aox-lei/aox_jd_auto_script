@@ -4,6 +4,8 @@ import logging
 import click
 from app.utils.base import Login
 from app.utils.comment import ServerComment, ProductComment, AppendComment
+from app.utils.bean_app import bean_app as bean_app_shell
+from app.utils.bean_vip import bean_vip as bean_vip_shell
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # 禁用安全请求警告
 
@@ -31,7 +33,27 @@ def comment():
     AppendComment().start_comment()
 
 
+@click.command()
+def bean_app():
+    login_result = Login().login()
+    if login_result:
+        logging.info('登录成功')
+
+    bean_app_shell().run()
+
+
+@click.command()
+def bean_vip():
+    login_result = Login().login()
+    if login_result:
+        logging.info('登录成功')
+
+    bean_vip_shell().run()
+
+
 cli.add_command(comment)
+cli.add_command(bean_app)
+cli.add_command(bean_vip)
 
 if __name__ == '__main__':
     cli()
