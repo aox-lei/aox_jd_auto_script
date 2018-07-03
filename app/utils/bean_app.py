@@ -11,7 +11,7 @@ from app.utils.base import base
 class bean_app(base):
     INFO_URL = 'https://api.m.jd.com/client.action?functionId=queryBeanIndex'
     SIGN_URL = 'https://api.m.jd.com/client.action?functionId=signBeanStart'
-
+    POKER_URL = 'https://api.m.jd.com/client.action?functionId=getCardResult'
     client_info = {'client': 'ld', 'clientVersion': '1.0.0'}
 
     def run(self):
@@ -60,7 +60,7 @@ class bean_app(base):
 
         try:
             payload = {'body': json.dumps({'index': poker_to_pick})}
-            data = self.fetch_data(self.poker_url, payload=payload)
+            data = self.fetch_data(self.POKER_URL, payload=payload)
         except Exception as e:
             logging.exception(e)
             return False
