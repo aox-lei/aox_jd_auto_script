@@ -6,6 +6,8 @@ from app.utils.base import Login
 from app.utils.comment import ServerComment, ProductComment, AppendComment
 from app.utils.bean_app import bean_app as bean_app_shell
 from app.utils.bean_vip import bean_vip as bean_vip_shell
+from app.utils.clock_app import clock_app as clock_app_shell
+from app.utils.clock import clock as clock_shell
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # 禁用安全请求警告
 
@@ -51,9 +53,28 @@ def bean_vip():
     bean_vip_shell().run()
 
 
+@click.command()
+def clock_app():
+    login_result = Login().login()
+    if login_result:
+        logging.info('登录成功')
+
+    clock_app_shell().run()
+
+
+@click.command()
+def clock():
+    login_result = Login().login()
+    if login_result:
+        logging.info('登录成功')
+
+    clock_shell().run()
+
+
 cli.add_command(comment)
 cli.add_command(bean_app)
 cli.add_command(bean_vip)
-
+cli.add_command(clock_app)
+cli.add_command(clock)
 if __name__ == '__main__':
     cli()
