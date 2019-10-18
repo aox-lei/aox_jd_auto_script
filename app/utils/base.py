@@ -12,7 +12,7 @@ class base(object):
     LOGIN_URL = 'https://passport.jd.com/new/login.aspx'
     INDEX_URL = 'https://www.jd.com/'
 
-    def __init__(self,):
+    def __init__(self, ):
         self.session = requests.Session()
         self.load_cookie()
 
@@ -32,15 +32,15 @@ class base(object):
             with open(self.COOKIE_PATH, 'r') as f:
                 cookies = f.read()
             cookies = json.loads(cookies)
-            cookies = requests.utils.cookiejar_from_dict(
-                cookies, cookiejar=None, overwrite=True)
+            cookies = requests.utils.cookiejar_from_dict(cookies,
+                                                         cookiejar=None,
+                                                         overwrite=True)
             self.session.cookies = cookies
             return True
         return False
 
 
 class Login(base):
-
     def login(self):
         ''' selenium 登录京东 '''
 

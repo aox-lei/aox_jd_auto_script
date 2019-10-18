@@ -3,13 +3,16 @@
     京东订单自动评价
 '''
 import json
-import requests
 import logging
 import random
+import sys
 import time
-from requests_html import HTML
-from furl import furl
 from urllib import parse
+
+import requests
+from furl import furl
+from requests_html import HTML
+
 from app.utils.base import base
 
 
@@ -20,19 +23,14 @@ class Comment(base):
     comment_list = None
     req_headers = {
         'User-Agen':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36',
-        'Content-Type':
-            'application/x-www-form-urlencoded',
-        'Accept-Encoding':
-            'gzip, deflate, br',
-        'Accept-Language':
-            'zh-CN,zh;q=0.9',
-        'Accept':
-            'application/json, text/javascript, */*; q=0.01',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
         'Referer':
-            'https://club.jd.com/myJdcomments/orderVoucher.action?ruleid=76988862343',
-        'X-Requested-With':
-            'XMLHttpRequest'
+        'https://club.jd.com/myJdcomments/orderVoucher.action?ruleid=76988862343',
+        'X-Requested-With': 'XMLHttpRequest'
     }
     sort = 0
 
@@ -71,11 +69,11 @@ class Comment(base):
                 if self.sort == 4:
                     result = self.submit_comment(i.get('order_id'))
                 if self.sort == 0:
-                    result = self.submit_comment(
-                        i.get('order_id'), i.get('product_id'))
+                    result = self.submit_comment(i.get('order_id'),
+                                                 i.get('product_id'))
                 if self.sort == 3:
-                    result = self.submit_comment(
-                        i.get('order_id'), i.get('product_id'))
+                    result = self.submit_comment(i.get('order_id'),
+                                                 i.get('product_id'))
 
                 if result:
                     logging.info('【%s成功】 订单id: %d, 商品id: %d' %
@@ -101,16 +99,17 @@ class Comment(base):
             logging.exception(e)
             return False
 
-        data = result.text.replace('fetchJSON_comment98vv658(', '').replace(
-            ');', '')
-        data = json.loads(data)
+        data = result.text.replace('fetchJSON_comment98vv658(',
+                                   '').replace(');', '')
         images = []
-        for i in data['comments']:
-            if i.get('images'):
-                for _images in i.get('images'):
-                    images.append(_images.get('imgUrl'))
-            if len(images) >= 3:
-                break
+        if data:
+            data = json.loads(data)
+            for i in data['comments']:
+                if i.get('images'):
+                    for _images in i.get('images'):
+                        images.append(_images.get('imgUrl'))
+                if len(images) >= 3:
+                    break
 
         return images
 
@@ -129,7 +128,7 @@ class ServerComment(Comment):
         html = HTML(html=html)
         tbody_list = html.find(
             '#main > div.mycomment-bd > div.mycomment-table > table > tbody')
-        list = []
+        lists = []
         for _tbody in tbody_list:
             _tbody = HTML(html=_tbody.html)
             product_url = furl(
@@ -137,13 +136,13 @@ class ServerComment(Comment):
                     'tr.tr-bd > td:nth-child(1) > div.goods-item > div.p-msg > div > a'
                 )[0].attrs['href'])
             order_id = _tbody.find('tr.tr-th > td > span.number > a')[0].text
-            list.append({
+            lists.append({
                 'product_id':
-                    int(str(product_url.path).strip('/').strip('.html')),
+                int(str(product_url.path).strip('/').strip('.html')),
                 'order_id':
-                    order_id
+                order_id
             })
-        return list
+        return lists
 
     def submit_comment(self, order_id):
         ''' 服务评价 '''
@@ -156,11 +155,10 @@ class ServerComment(Comment):
             'ro1828': '1828A1',
             'ro1829': '1829A1'
         }
-        results = self.session.post(
-            self.COMMENT_URL % (int(order_id)),
-            data=post_data,
-            headers=self.req_headers,
-            verify=False)
+        results = self.session.post(self.COMMENT_URL % (int(order_id)),
+                                    data=post_data,
+                                    headers=self.req_headers,
+                                    verify=False)
         return results.text
 
 
@@ -182,14 +180,14 @@ class ProductComment(Comment):
             order_id = _order.find('tr.tr-th > td > span.number > a')[0].text
             for _product in _product_list:
                 product_url = furl(
-                    _product.find('div.goods-item > div.p-msg > div.p-name > a')
-                    [0].attrs['href'])
+                    _product.find('div.goods-item > div.p-msg > div.p-name > a'
+                                  )[0].attrs['href'])
 
                 list.append({
                     'order_id':
-                        order_id,
+                    order_id,
                     'product_id':
-                        int(str(product_url.path).strip('/').strip('.html'))
+                    int(str(product_url.path).strip('/').strip('.html'))
                 })
         return list
 
@@ -244,8 +242,9 @@ class ProductComment(Comment):
             product_id, time.time())
 
         try:
-            result = self.session.get(
-                url, verify=False, headers=self.req_headers)
+            result = self.session.get(url,
+                                      verify=False,
+                                      headers=self.req_headers)
         except Exception as e:
             logging.exception(e)
             return False
@@ -259,7 +258,6 @@ class ProductComment(Comment):
 
 
 class AppendComment(Comment):
-
     def __init__(self):
         super(AppendComment, self).__init__()
         self.sort = 3
@@ -290,8 +288,10 @@ class AppendComment(Comment):
             'anonymousFlag': 1,
         }
 
-        results = self.session.post(
-            url, data=params, headers=self.req_headers, verify=False)
+        results = self.session.post(url,
+                                    data=params,
+                                    headers=self.req_headers,
+                                    verify=False)
         results = json.loads(results.text)
 
         if results.get('success') == True:

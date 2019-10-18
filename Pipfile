@@ -1,5 +1,5 @@
 [[source]]
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+url = "https://pypi.mirrors.ustc.edu.cn/simple/"
 verify_ssl = true
 name = "pypi"
 
@@ -8,9 +8,10 @@ requests = "*"
 click = "*"
 furl = "*"
 requests-html = "*"
-"pyqt5" = "*"
+pyqt5 = "==5.10.1"
 
 [dev-packages]
+yapf = "*"
 
 [requires]
 python_version = "3.6"

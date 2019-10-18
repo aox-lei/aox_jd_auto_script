@@ -2,6 +2,7 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile
 from PyQt5.QtCore import QUrl
+import sys
 
 
 class WebBrowser(QWebEngineView):
@@ -36,5 +37,5 @@ def openWithWebBrowser(url):
     view.load(QUrl(url))
     view.show()
     app.exec_()
-
-    return view.get_cookies()
+    cookies = view.get_cookies()
+    return cookies
