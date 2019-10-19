@@ -65,6 +65,9 @@ class Comment(base):
             if not product_list:
                 logging.info(comment_type + '评价完成')
                 return True
+            # TODO: 测试代码
+            # self.getSkuInstallVoucherByOrderId('102750366961')
+            # sys.exit()
             for i in product_list:
                 if self.sort == 4:
                     result = self.submit_comment(i.get('order_id'))
@@ -143,6 +146,40 @@ class ServerComment(Comment):
                 order_id
             })
         return lists
+
+    def getSkuInstallVoucherByOrderId(self, order_id):
+        url = 'https://club.jd.com/myJdcomments/getSkuInstallVoucherByOrderId.action?callback=jQuery7340659&orderId={}&_={}'.format(
+            order_id, time.time())
+        result = self.session.get(url,
+                                  headers=self.req_headers,
+                                  verify=False,
+                                  proxies={'https': "http://127.0.0.1:8888"})
+        data = result.text.replace('jQuery7340659(', '').replace(');', '')
+        data = json.loads(data)
+        if data.get('success') is True:
+            voucherList = data.get('result').get('voucherList')
+            if voucherList:
+                saveSkuInstallVoucherByOrderIdUrl = 'https://club.jd.com/myJdcomments/saveSkuInstallComment.action'
+                post_data = {
+                    'orderId': order_id,
+                    'pin': voucherList[0].get('pin'),
+                    'associateId': voucherList[0].get('associateId'),
+                    'userClient': "2",
+                    'score1': '1',
+                    'ip': '192.168.1.1',
+                    'content': '安装师傅很用心, 很不错, 非常感谢',
+                }
+                result = self.session.post(
+                    saveSkuInstallVoucherByOrderIdUrl,
+                    data=post_data,
+                    headers=self.req_headers,
+                    verify=False,
+                    proxies={'https': 'http://127.0.0.1:8888'})
+                data = json.loads(result.text)
+                if data.get('success') is True:
+                    return True
+                else:
+                    print(data)
 
     def submit_comment(self, order_id):
         ''' 服务评价 '''

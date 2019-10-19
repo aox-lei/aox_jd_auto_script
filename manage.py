@@ -28,11 +28,11 @@ def comment():
         logging.info('登录成功')
 
     # 服务评价
-    # ServerComment().start_comment()
+    ServerComment().start_comment()
     # 商品评价
     # ProductComment().start_comment()
     # 追加评价
-    AppendComment().start_comment()
+    # AppendComment().start_comment()
 
 
 @click.command()
