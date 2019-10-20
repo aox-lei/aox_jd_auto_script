@@ -13,7 +13,14 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # 禁用安�
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filemode='a',
+    filename='data/jd.log')
+
+logger = logging.getLogger()
+
+console_handler = logging.StreamHandler()
+logger.addHandler(console_handler)
 
 
 @click.group()

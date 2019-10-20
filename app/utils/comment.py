@@ -15,6 +15,8 @@ from requests_html import HTML
 
 from app.utils.base import base
 
+logger = logging.getLogger('jd.comment')
+
 
 class Comment(base):
     COMMENT_PATH = './data/comment.txt'
@@ -68,6 +70,8 @@ class Comment(base):
             # TODO: 测试代码
             # self.getSkuInstallVoucherByOrderId('102750366961')
             # sys.exit()
+            logger.info('获取未评价订单数: {}'.format(len(product_list)))
+
             for i in product_list:
                 if self.sort == 4:
                     result = self.submit_comment(i.get('order_id'))
@@ -79,11 +83,11 @@ class Comment(base):
                                                  i.get('product_id'))
 
                 if result:
-                    logging.info('【%s成功】 订单id: %d, 商品id: %d' %
+                    logger.info('【%s成功】 订单id: %d, 商品id: %d' %
                                  (comment_type, int(i.get('order_id')),
                                   int(i.get('product_id'))))
                 else:
-                    logging.info('【%s失败】 订单id: %d, 商品id: %d' %
+                    logger.info('【%s失败】可能已评价过订单 订单id: %d, 商品id: %d' %
                                  (comment_type, int(i.get('order_id')),
                                   int(i.get('product_id'))))
                 time.sleep(5)
@@ -150,10 +154,8 @@ class ServerComment(Comment):
     def getSkuInstallVoucherByOrderId(self, order_id):
         url = 'https://club.jd.com/myJdcomments/getSkuInstallVoucherByOrderId.action?callback=jQuery7340659&orderId={}&_={}'.format(
             order_id, time.time())
-        result = self.session.get(url,
-                                  headers=self.req_headers,
-                                  verify=False,
-                                  proxies={'https': "http://127.0.0.1:8888"})
+        result = self.session.get(url, headers=self.req_headers, verify=False)
+        logger.debug(result.text)
         data = result.text.replace('jQuery7340659(', '').replace(');', '')
         data = json.loads(data)
         if data.get('success') is True:
@@ -169,17 +171,17 @@ class ServerComment(Comment):
                     'ip': '192.168.1.1',
                     'content': '安装师傅很用心, 很不错, 非常感谢',
                 }
-                result = self.session.post(
-                    saveSkuInstallVoucherByOrderIdUrl,
-                    data=post_data,
-                    headers=self.req_headers,
-                    verify=False,
-                    proxies={'https': 'http://127.0.0.1:8888'})
+                result = self.session.post(saveSkuInstallVoucherByOrderIdUrl,
+                                           data=post_data,
+                                           headers=self.req_headers,
+                                           verify=False)
                 data = json.loads(result.text)
                 if data.get('success') is True:
+                    logger.info('安装服务评价成功, 订单号:{}'.format(order_id))
                     return True
                 else:
-                    print(data)
+                    logger.info('安装服务评价成功, 可能已评价过, 订单号:{}'.format(order_id))
+                    return False
 
     def submit_comment(self, order_id):
         ''' 服务评价 '''
@@ -196,6 +198,11 @@ class ServerComment(Comment):
                                     data=post_data,
                                     headers=self.req_headers,
                                     verify=False)
+        self.getSkuInstallVoucherByOrderId(order_id)
+        data = json.loads(results.text)
+        logger.debug(results.text)
+        if data.get('success') is True:
+            logger.info('服务评价成功, 订单号:{}'.format(order_id))
         return results.text
 
 
