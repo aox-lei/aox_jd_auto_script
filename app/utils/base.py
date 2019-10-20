@@ -31,7 +31,10 @@ class base(object):
         if os.path.exists(self.COOKIE_PATH):
             with open(self.COOKIE_PATH, 'r') as f:
                 cookies = f.read()
-            cookies = json.loads(cookies)
+            try:
+                cookies = json.loads(cookies)
+            except Exception as e:
+                return False
             cookies = requests.utils.cookiejar_from_dict(cookies,
                                                          cookiejar=None,
                                                          overwrite=True)
@@ -43,7 +46,7 @@ class base(object):
 class Login(base):
     def login(self):
         ''' selenium 登录京东 '''
-
+        self.clean_cookie()
         if self.load_cookie() and self.check_login():
             return True
 
@@ -55,3 +58,9 @@ class Login(base):
             return True
 
         return False
+
+    def clean_cookie(self):
+        with open(self.COOKIE_PATH, 'w') as f:
+            f.write('{}')
+
+        return True
