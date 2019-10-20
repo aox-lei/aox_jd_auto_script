@@ -20,7 +20,7 @@ logger = logging.getLogger('jd.comment')
 
 class Comment(base):
     COMMENT_PATH = './data/comment.txt'
-    COMMENT_PRODUCT_LIST = 'https://club.jd.com/myJdcomments/myJdcomment.action?sort=%d'
+    COMMENT_PRODUCT_LIST = 'https://club.jd.com/myJdcomments/myJdcomment.action?sort=%d&page=%d'
     PRODUCT_COMMENT_LIST_URL = 'https://sclub.jd.com/comment/productPageComments.action?callback=fetchJSON_comment98vv658&productId=%d&score=0&sortType=5&page=0&pageSize=10&isShadowSku=0&fold=1'
     comment_list = None
     req_headers = {
@@ -43,8 +43,8 @@ class Comment(base):
 
         self.load_cookie()
 
-    def get_product_list(self):
-        url = self.COMMENT_PRODUCT_LIST % (int(self.sort))
+    def get_product_list(self, page=1):
+        url = self.COMMENT_PRODUCT_LIST % (int(self.sort), int(page))
         try:
             result = self.session.get(url, verify=False)
         except Exception as e:
@@ -62,11 +62,13 @@ class Comment(base):
             comment_type = '追加评价'
         elif self.sort == 4:
             comment_type = '服务评价'
+        page = 1
         while 1:
-            product_list = self.get_product_list()
+            product_list = self.get_product_list(page)
             if not product_list:
                 logging.info(comment_type + '评价完成')
                 return True
+            page += 1
             # TODO: 测试代码
             # self.getSkuInstallVoucherByOrderId('102750366961')
             # sys.exit()
@@ -84,12 +86,12 @@ class Comment(base):
 
                 if result:
                     logger.info('【%s成功】 订单id: %d, 商品id: %d' %
-                                 (comment_type, int(i.get('order_id')),
-                                  int(i.get('product_id'))))
+                                (comment_type, int(i.get('order_id')),
+                                 int(i.get('product_id'))))
                 else:
                     logger.info('【%s失败】可能已评价过订单 订单id: %d, 商品id: %d' %
-                                 (comment_type, int(i.get('order_id')),
-                                  int(i.get('product_id'))))
+                                (comment_type, int(i.get('order_id')),
+                                 int(i.get('product_id'))))
                 time.sleep(5)
 
     def get_comment_list(self):
