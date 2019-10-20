@@ -65,10 +65,15 @@ class Comment(base):
         page = 1
         while 1:
             product_list = self.get_product_list(page)
-            if not product_list:
+            if not product_list and page == 1:
                 logging.info(comment_type + '评价完成')
                 return True
-            page += 1
+            elif not product_list:
+                page = 1
+                continue
+            else:
+                page += 1
+
             # TODO: 测试代码
             # self.getSkuInstallVoucherByOrderId('102750366961')
             # sys.exit()
